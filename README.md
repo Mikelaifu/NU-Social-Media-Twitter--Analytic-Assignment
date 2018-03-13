@@ -36,6 +36,8 @@ As final considerations:
 
 
 Second Project Twitter bot
+
+
 Use the Matplotlib libraries.
 Include a written description of three observable trends based on the data.
 Include proper labeling of your plots, including plot titles (with date of analysis) and axes labels.
