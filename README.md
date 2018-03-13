@@ -4,7 +4,7 @@ Unit 7 | Assignment - Distinguishing Sentiments
 Background
 Twitter has become a wildly sprawling jungle of information—140 characters at a time. Somewhere between 350 million and 500 million tweets are estimated to be sent out per day. With such an explosion of data, on Twitter and elsewhere, it becomes more important than ever to tame it in some way, to concisely capture the essence of the data.
 
-Choose one of the following two assignments, in which you will do just that. Good luck!
+First project: News_sentimenatal analysis 
 
 News Mood
 In this assignment, you'll create a Python script to perform a sentiment analysis of the Twitter activity of various news oulets, and to present your findings visually.
@@ -33,6 +33,9 @@ Export the data in the DataFrame into a CSV file.
 Save PNG images for each plot.
 As final considerations:
 
+
+
+Second Project Twitter bot
 Use the Matplotlib libraries.
 Include a written description of three observable trends based on the data.
 Include proper labeling of your plots, including plot titles (with date of analysis) and axes labels.
