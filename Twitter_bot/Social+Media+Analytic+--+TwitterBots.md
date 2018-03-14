@@ -1,7 +1,7 @@
 
 ## Explnation: 
     
-In this project: I create a twitter bot. that create a twitter monitoring system to spider the newst key words sent from account @PlotBot ; then extract those key word for sentimental analysis and plot the analysis then send into my new account @DraculaisLaifu.
+In this project: I create a twitter bot(as a twitter monitoring system to spider the newst request(any mention "@DraculaisLaifu" sent from different account in thr format of "hi @DraculaisLaifu, can you analyze " @anything" ; then extract data from @anything for sentimental analysis and plot the analysis then send the graph into analysis account @DraculaisLaifu.
 
 for example displaying: I tweeted about those key account:
 
@@ -59,7 +59,7 @@ Api = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
 
 
 ```python
-api.update_status("@PlotBot Analyze: @binance_2017 ")
+api.update_status("Hi @DraculaisLaifu, please analyze @netflix !" )
 ```
 
 
@@ -67,37 +67,37 @@ api.update_status("@PlotBot Analyze: @binance_2017 ")
 
     {'contributors': None,
      'coordinates': None,
-     'created_at': 'Tue Mar 13 21:50:29 +0000 2018',
+     'created_at': 'Wed Mar 14 22:16:16 +0000 2018',
      'entities': {'hashtags': [],
       'symbols': [],
       'urls': [],
-      'user_mentions': [{'id': 17582138,
-        'id_str': '17582138',
-        'indices': [0, 8],
-        'name': 'Plotbot',
-        'screen_name': 'plotbot'},
-       {'id': 877807935493033984,
-        'id_str': '877807935493033984',
-        'indices': [18, 31],
-        'name': 'binance',
-        'screen_name': 'binance_2017'}]},
+      'user_mentions': [{'id': 973375514982350851,
+        'id_str': '973375514982350851',
+        'indices': [3, 18],
+        'name': 'Mike Wu',
+        'screen_name': 'DraculaisLaifu'},
+       {'id': 16573941,
+        'id_str': '16573941',
+        'indices': [35, 43],
+        'name': 'Netflix US',
+        'screen_name': 'netflix'}]},
      'favorite_count': 0,
      'favorited': False,
      'geo': None,
-     'id': 973677704678707202,
-     'id_str': '973677704678707202',
-     'in_reply_to_screen_name': 'plotbot',
+     'id': 974046582734774272,
+     'id_str': '974046582734774272',
+     'in_reply_to_screen_name': None,
      'in_reply_to_status_id': None,
      'in_reply_to_status_id_str': None,
-     'in_reply_to_user_id': 17582138,
-     'in_reply_to_user_id_str': '17582138',
+     'in_reply_to_user_id': None,
+     'in_reply_to_user_id_str': None,
      'is_quote_status': False,
      'lang': 'en',
      'place': None,
      'retweet_count': 0,
      'retweeted': False,
      'source': '<a href="https://github.com/Mikelaifu" rel="nofollow">NUTwitterAPITesting</a>',
-     'text': '@PlotBot Analyze: @binance_2017',
+     'text': 'Hi @DraculaisLaifu, please analyze @netflix !',
      'truncated': False,
      'user': {'contributors_enabled': False,
       'created_at': 'Wed Sep 06 16:15:33 +0000 2017',
@@ -107,7 +107,7 @@ api.update_status("@PlotBot Analyze: @binance_2017 ")
       'entities': {'description': {'urls': []}},
       'favourites_count': 30,
       'follow_request_sent': False,
-      'followers_count': 49,
+      'followers_count': 47,
       'following': False,
       'friends_count': 77,
       'geo_enabled': True,
@@ -135,7 +135,7 @@ api.update_status("@PlotBot Analyze: @binance_2017 ")
       'profile_use_background_image': True,
       'protected': False,
       'screen_name': 'mikewdalmatian',
-      'statuses_count': 36,
+      'statuses_count': 37,
       'time_zone': None,
       'translator_type': 'none',
       'url': None,
@@ -147,16 +147,19 @@ api.update_status("@PlotBot Analyze: @binance_2017 ")
 
 ```python
 # account
-def search_newKeyWord(user):
-    public_tweet = Api.search(user, count = 10, results_type = "recent")
+def search_newKeyWord(keyword):
+    public_tweet = Api.search(keyword, count = 10, results_type = "recent")
 
-    searchlist = []
+    searchlist = {}
+#     mention =[]
+#     username = []
     if public_tweet['statuses']:
         
-        for tweet in public_tweet['statuses']: 
-            mention = tweet['entities']['user_mentions'][1]['screen_name']
+        for tweet in public_tweet['statuses']:
+            mention =tweet['entities']['user_mentions'][1]['screen_name']
+            username = tweet['user']['screen_name']
             
-            searchlist.append(mention)
+            searchlist[mention] = username
     
     return searchlist
 
@@ -174,7 +177,7 @@ def comparison_mention() :
         if tweet['entities']['user_mentions']:
             
             com_mention = tweet['entities']['user_mentions'][0]['screen_name']
-        
+            
             comparList.append(com_mention)
     
     return comparList
@@ -185,17 +188,45 @@ def comparison_mention() :
 
 
 ```python
+search_newKeyWord('@DraculaisLaifu')
+
+```
+
+
+
+
+    {'Bitcoin': 'mikewdalmatian',
+     'CBSSports': 'mikewdalmatian',
+     'krakenfx': 'mikewdalmatian',
+     'netflix': 'mikewdalmatian'}
+
+
+
+
+```python
+comparison_mention()
+```
+
+
+
+
+    ['GeminiDotCom', 'binance_2017']
+
+
+
+
+```python
 # 
 def gettarget_user():
-    searchlist = search_newKeyWord('@PlotBot Analyze')
+    searchlist = search_newKeyWord('@DraculaisLaifu')
     comparList  = comparison_mention()
 
-    target_users = []
-    for target in searchlist:
-        if target not in comparList:
-            target_users.append(target)
-        
-    return target_users  
+    target_users = {}
+    
+    for keys, val in searchlist.items():
+        if keys not in comparList:
+            target_users[keys] = val
+    return target_users
 
 ```
 
@@ -207,7 +238,10 @@ gettarget_user()
 
 
 
-    ['binance_2017', 'GeminiDotCom', 'coinbase']
+    {'Bitcoin': 'mikewdalmatian',
+     'CBSSports': 'mikewdalmatian',
+     'krakenfx': 'mikewdalmatian',
+     'netflix': 'mikewdalmatian'}
 
 
 
@@ -278,10 +312,7 @@ def plottingaway(index, dictionarylist, target):
     
     return plt.plot(dictionarylist[index][target]["Tweets ago"], dictionarylist[index][target]["Compound"], 
                              c = 'b', linewidth = 0.2, marker = "o", alpha = 0.5)
-    #plt.show()
-                #plt.savefig("Sentiment Analysis {}.png".format(target))    
-
-
+    
 ```
 
 
@@ -297,58 +328,82 @@ def makedict (target_list, dataFrameDict):
 
 
 ```python
-gettarget_user()
+target_list = target_users
+def makedict2 (mentioner, dataFrameDict , target_list):
+    
+    x = dict(zip(target_users,  mentioner))
+    d = {}
+    for i in range(0, len(x)):
+        d[i] = x
+    return d
 ```
 
 
-
-
-    ['binance_2017', 'GeminiDotCom', 'coinbase']
-
-
-
-
 ```python
-# now combine the makedict () function - for loop, and plottingaway() to save the plots into list visual
-target_users = gettarget_user()
+targetdict = gettarget_user()
+target_users= []
+mentioner = []
+for key, val in targetdict.items():
+    target_users.append(key)
+    mentioner.append(val)
+ 
+    
 dictionarylist = convertToDataFrame(target_users)
 target_list = target_users
+
 visual = []
-for keys, vals in makedict(target_list, dataFrameDict).items():
+for keys, vals in makedict(target_list, dictionarylist).items():
     plot = plottingaway(vals, dictionarylist , keys)
     print(plot)
     visual.append(plot)
     
+
 ```
 
-    Sentiment Analysis binance_2017.png
-    [<matplotlib.lines.Line2D object at 0x10abd8198>]
-    Sentiment Analysis GeminiDotCom.png
-    [<matplotlib.lines.Line2D object at 0x10bb8db00>]
-    Sentiment Analysis coinbase.png
-    [<matplotlib.lines.Line2D object at 0x10abe3630>]
+    Sentiment Analysis isDARTHVADER.png
+    [<matplotlib.lines.Line2D object at 0x113cd0160>]
+    Sentiment Analysis netflix.png
+    [<matplotlib.lines.Line2D object at 0x113cd0240>]
+    Sentiment Analysis CBSSports.png
+    [<matplotlib.lines.Line2D object at 0x11e8f8940>]
+    Sentiment Analysis krakenfx.png
+    [<matplotlib.lines.Line2D object at 0x11e9d1128>]
+    Sentiment Analysis Bitcoin.png
+    [<matplotlib.lines.Line2D object at 0x11ec4df60>]
 
 
 
 ```python
-# send those two saved graph into my new account #Draculalaifu
-for keys, vals in makedict(target_list, dataFrameDict).items():
-    
-    visual[vals]
-    plt.show()
-    Api.update_with_media("Sentiment Analysis {}.png".format(keys),
-                      "New Tweet Analysis: @{}".format(keys))
-    now = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-    print(f"Sucessfully send analysis at {now}")
-    
-    time.sleep(60)
+target_list = target_users
+mentioner = mentioner
+y = makedict2 (mentioner, dataFrameDict , target_list)
+
+list(y.values())[0]
 ```
 
 
-![png](output_13_0.png)
 
 
-    Sucessfully send analysis at 2018-03-13 21:58:41
-    Sucessfully send analysis at 2018-03-13 21:59:43
-    Sucessfully send analysis at 2018-03-13 22:00:44
+    {'Bitcoin': 'mikewdalmatian',
+     'CBSSports': 'mikewdalmatian',
+     'isDARTHVADER': 'Orange_cc',
+     'krakenfx': 'mikewdalmatian',
+     'netflix': 'mikewdalmatian'}
 
+
+
+
+```python
+
+# for keyIndex in range(len(y)):
+#     visual[keyIndex]
+#     plt.show()
+    
+for key, val in (list(y.values())[0]).items():
+    Api.update_with_media("Sentiment Analysis {}.png".format(key),
+            "New Tweet Analysis: @{} ".format(key) + "(Thx @{} )".format(val))
+    now = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+    print(f"Sucessfully send analysis at {now}")
+    
+    time.sleep(5)
+```

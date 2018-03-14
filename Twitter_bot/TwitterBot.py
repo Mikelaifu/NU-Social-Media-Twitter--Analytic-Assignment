@@ -34,18 +34,22 @@ auth.set_access_token(Access_token, Access_token_secret)
 Api = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
 #--------------------------------------------------------------------------------------
 # account
-def search_newKeyWord(user):
-    public_tweet = Api.search(user, count = 10, results_type = "recent")
+def search_newKeyWord(keyword):
+    public_tweet = Api.search(keyword, count = 10, results_type = "recent")
 
-    searchlist = []
+    searchlist = {}
+#     mention =[]
+#     username = []
     if public_tweet['statuses']:
         
-        for tweet in public_tweet['statuses']: 
-            mention = tweet['entities']['user_mentions'][1]['screen_name']
+        for tweet in public_tweet['statuses']:
+            mention =tweet['entities']['user_mentions'][1]['screen_name']
+            username = tweet['user']['screen_name']
             
-            searchlist.append(mention)
+            searchlist[mention] = username
     
     return searchlist
+
 
 #****************************************************************************************
 # account 2
@@ -61,22 +65,24 @@ def comparison_mention() :
         if tweet['entities']['user_mentions']:
             
             com_mention = tweet['entities']['user_mentions'][0]['screen_name']
-        
+            
             comparList.append(com_mention)
     
     return comparList
+    
 #****************************************************************************************
 
+# get key word dict
 def gettarget_user():
-    searchlist = search_newKeyWord('@PlotBot Analyze')
+    searchlist = search_newKeyWord('@DraculaisLaifu')
     comparList  = comparison_mention()
 
-    target_users = []
-    for target in searchlist:
-        if target not in comparList:
-            target_users.append(target)
-        
-    return target_users      
+    target_users = {}
+    
+    for keys, val in searchlist.items():
+        if keys not in comparList:
+            target_users[keys] = val
+    return target_users    
     
 #****************************************************************************************
 # define a function that return the the dictionary conatin wanted info 
@@ -140,7 +146,6 @@ def plottingaway(index, dictionarylist, target):
                              c = 'b', linewidth = 0.2, marker = "o", alpha = 0.5)
     
 
-
 #*******************************************************************************************************
 # create a transitional function makedict that conbine targetuser and length of dataframe we just created into a dict for a loop later
 target_list = target_users
@@ -150,28 +155,42 @@ def makedict (target_list, dataFrameDict):
     
     return nameDict
 
-
+#**************************************************************************
+target_list = target_users
+def makedict2 (mentioner, dataFrameDict , target_list):
+    
+    x = dict(zip(target_users,  mentioner))
+    d = {}
+    for i in range(0, len(x)):
+        d[i] = x
+    return d
 # --------------------------------------------start plotting and analysis------------------------------------------------------
 
 # now combine the makedict () function - for loop, and plottingaway() to save the plots into list visual
-target_users = gettarget_user()
+targetdict = gettarget_user()
+target_users= []
+mentioner = []
+for key, val in targetdict.items():
+    target_users.append(key)
+    mentioner.append(val)
+ 
+    
 dictionarylist = convertToDataFrame(target_users)
 target_list = target_users
+mentioners = mentioner
 visual = []
-for keys, vals in makedict(target_list, dataFrameDict).items():
+for keys, vals in makedict(target_list, dictionarylist).items():
     plot = plottingaway(vals, dictionarylist , keys)
     print(plot)
     visual.append(plot)
     
+    
 # ----------------------sentimental analysis sent out--------------------------------
 # send those two saved graph into my new account #Draculalaifu
-for keys, vals in makedict(target_list, dataFrameDict).items():
-    
-    visual[vals]
-    plt.show()
-    Api.update_with_media("Sentiment Analysis {}.png".format(keys),
-                      "New Tweet Analysis: @{}".format(keys))
+for key, val in (list(y.values())[0]).items():
+    Api.update_with_media("Sentiment Analysis {}.png".format(key),
+            "New Tweet Analysis: @{} ".format(key) + "(Thx @{} )".format(val))
     now = strftime("%Y-%m-%d %H:%M:%S", gmtime())
     print(f"Sucessfully send analysis at {now}")
     
-    time.sleep(60)
+    time.sleep(5)
